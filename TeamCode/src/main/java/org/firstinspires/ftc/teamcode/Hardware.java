@@ -9,20 +9,55 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 
 public class Hardware {
-    public DcMotor DriveMotorLF = null;
-    public DcMotor DriveMotorRF = null;
-    public DcMotor DriveMotorLB = null;
-    public DcMotor DriveMotorRB = null;
+    public DcMotor DriveMotorFL = null;
+    public DcMotor DriveMotorFR = null;
+    public DcMotor DriveMotorBL = null;
+    public DcMotor DriveMotorBR = null;
 
     public void init(HardwareMap hwMap, Telemetry tele) {
-        DriveMotorLF = hwMap.dcMotor.get("LF");
-        DriveMotorRF = hwMap.dcMotor.get("RF");
-        DriveMotorLB = hwMap.dcMotor.get("LB");
-        DriveMotorRB = hwMap.dcMotor.get("RB");
+        DriveMotorFL = hwMap.dcMotor.get("FL");
+        DriveMotorFR = hwMap.dcMotor.get("FR");
+        DriveMotorBL = hwMap.dcMotor.get("BL");
+        DriveMotorBR = hwMap.dcMotor.get("BR");
 
-        DriveMotorLF.setDirection(DcMotor.Direction.FORWARD);
-        DriveMotorRF.setDirection(DcMotor.Direction.REVERSE);
-        DriveMotorLB.setDirection(DcMotor.Direction.FORWARD);
-        DriveMotorRB.setDirection(DcMotor.Direction.REVERSE);
+        DriveMotorFL.setDirection(DcMotor.Direction.FORWARD);
+        DriveMotorFR.setDirection(DcMotor.Direction.REVERSE);
+        DriveMotorBL.setDirection(DcMotor.Direction.FORWARD);
+        DriveMotorBR.setDirection(DcMotor.Direction.REVERSE);
+    }
+
+    //basic functions
+
+    public void powerMotors(double powerFL, double powerFR, double powerBL, double powerBR) {
+        DriveMotorFL.setPower(powerFL);
+        DriveMotorFR.setPower(powerFR);
+        DriveMotorBL.setPower(powerBL);
+        DriveMotorBR.setPower(powerBR);
+    }
+
+    public void powerTime(double powerFL, double powerFR, double powerBL, double powerBR, int ms) {
+        powerMotors(powerFL, powerFR, powerBL, powerBR);
+        sleep(ms);
+        powerMotors(0, 0, 0, 0);
+    }
+
+    public void turn(double power) {
+        powerMotors(-power, power, -power, power);
+    }
+
+    public void turnTime(double power, int ms) {
+        powerTime(-power, power, -power, power, ms);
+    }
+
+    public void strafe(double power) {
+        powerMotors(power, -power, -power, power);
+    }
+
+    public void strafeTime(double power, int ms) {
+        powerTime(power, -power, power, -power, ms);
+    }
+
+    public void sleep(int ms) {
+        try {Thread.sleep(ms);} catch (Exception e) {}
     }
 }
