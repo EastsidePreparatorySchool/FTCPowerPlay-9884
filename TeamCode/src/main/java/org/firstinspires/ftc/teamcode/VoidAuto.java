@@ -115,26 +115,26 @@ public class VoidAuto extends LinearOpMode {
                     telemetry.addLine("Tag of interest is in sight!\n\nLocation data:");
                     tagToTelemetry(tagOfInterest);
                 }
-                // IF NOT, CHECK IF A RELEVANT TAG WAS EVER DETECTED
+                // IF NOT RELEVANT, CHECK LAST RELEVANT TAG DETECTED
                 else {
                     telemetry.addLine("Don't see tag of interest :(");
                     if(tagOfInterest == null) {
-                        telemetry.addLine("(The tag has never been seen)");
+                        telemetry.addLine("(A relevant tag has never been seen)");
                     }
                     else {
-                        telemetry.addLine("\nBut we HAVE seen the tag before; last seen at:");
+                        telemetry.addLine("\nBut we HAVE seen a relevant tag before; last seen at:");
                         tagToTelemetry(tagOfInterest);
                     }
                 }
             }
-            // IF NO DETECTIONS, CHECK IF RELEVANT TAG WAS EVER DETECTED
+            // IF NO DETECTIONS, CHECK LAST RELEVANT TAG DETECTED
             else {
                 telemetry.addLine("Don't see tag of interest :(");
                 if(tagOfInterest == null) {
-                    telemetry.addLine("(The tag has never been seen)");
+                    telemetry.addLine("(A relevant tag has never been seen)");
                 }
                 else {
-                    telemetry.addLine("\nBut we HAVE seen the tag before; last seen at:");
+                    telemetry.addLine("\nBut we HAVE seen a relevant tag before; last seen at:");
                     tagToTelemetry(tagOfInterest);
                 }
             }
@@ -145,13 +145,13 @@ public class VoidAuto extends LinearOpMode {
         // CHECK IF TAG WAS EVER SIGHTED DURING INIT LOOP
         // IF SO, TAG TO TELEM
         if(tagOfInterest != null) {
-            telemetry.addLine("Tag snapshot:\n");
+            telemetry.addLine("Most recent relevant tag snapshot:\n");
             tagToTelemetry(tagOfInterest);
             telemetry.update();
         }
         // IF NOT, be sad :(
         else {
-            telemetry.addLine("No tag snapshot available, it was never sighted during the init loop :(");
+            telemetry.addLine("No relevant tag snapshot available, one was never sighted during the init loop :(");
             telemetry.update();
         }
 

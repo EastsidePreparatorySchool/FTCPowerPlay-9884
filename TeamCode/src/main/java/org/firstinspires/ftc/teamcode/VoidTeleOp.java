@@ -24,10 +24,10 @@ public class VoidTeleOp extends LinearOpMode {
             double powerFL=ly+lx+rx, powerFR=ly-lx-rx, powerBL=ly-lx+rx, powerBR=ly+lx-rx;
             // Normalize values within +-1 or will be truncated, keep ratios
             double normalize = Math.max(Math.abs(lx)+Math.abs(ly)+Math.abs(rx),1);
-            powerFL/=normalize;
-            powerFR/=normalize;
-            powerBL/=normalize;
-            powerBR/=normalize;
+            powerFL /= normalize;
+            powerFR /= normalize;
+            powerBL /= normalize;
+            powerBR /= normalize;
             // Power motors w/ values
             robot.powerMotors(powerFL,powerFR,powerBL,powerBR);
         }
