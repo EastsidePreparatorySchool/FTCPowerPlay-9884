@@ -8,7 +8,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 /*
 * IMPORTANT
-* ADD EOCV FILE TO ROBOT CONTROL HUB ASAP
+* ADD EOCV FILE TO CONTROL HUB FIRST FOLDER ASAP
 * NEEDED FOR EOCV & APRILTAG DETECTION
 */
 
