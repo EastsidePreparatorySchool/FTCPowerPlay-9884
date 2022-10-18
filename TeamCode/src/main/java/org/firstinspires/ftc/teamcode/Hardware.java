@@ -66,4 +66,6 @@ public class Hardware {
     }
 
     public void sleep(int ms) {try {Thread.sleep(ms);} catch (Exception e) {}}
+
+    // SLIDE AND CLAW FUNCTIONS HERE
 }

@@ -19,6 +19,13 @@
  * SOFTWARE.
  */
 
+/*
+ * im gonna try to make this code as readable as possible because its not very clear what it's doing at a first glance
+ * i stole most of this code from the openftc eocv apriltags library
+ * OpenFTC/EOCV-AprilTag-Plugin/examples
+ * this uses the pipeline (unedited, in ./apriltagvision/AprilTagDetectionPipeline) and the AprilTagAutonomousInitDetectionExample.java file as a base
+ */
+
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -47,6 +54,7 @@ public class VoidAuto extends LinearOpMode {
     // You will need to do your own calibration for other configurations!
     // ^^^^^ NOT MY COMMENTS
     // ima be real idk how to calibrate it so im just gonna hope these values work w the camera we have
+    // we have logitech c270
     double fx = 578.272;
     double fy = 578.272;
     double cx = 402.145;
@@ -110,7 +118,7 @@ public class VoidAuto extends LinearOpMode {
                         break;
                     }
                 }
-                // TELEM IF RELEVANT TAG FOUND
+                // TELEM IF RELEVANT TAG FOUND ^^^^
                 if(tagFound) {
                     telemetry.addLine("Tag of interest is in sight!\n\nLocation data:");
                     tagToTelemetry(tagOfInterest);
@@ -127,7 +135,7 @@ public class VoidAuto extends LinearOpMode {
                     }
                 }
             }
-            // IF NO DETECTIONS, CHECK LAST RELEVANT TAG DETECTED
+            // IF NO DETECTIONS, CHECK LAST RELEVANT TAG DETECTED AND TELEM
             else {
                 telemetry.addLine("Don't see tag of interest :(");
                 if(tagOfInterest == null) {
@@ -159,16 +167,18 @@ public class VoidAuto extends LinearOpMode {
         // APRILTAG VALUE IS "tagid"  - VALUE CORRESPONDS TO SIDE OF SIGNAL, IF -1 NO TAG FOUND AT ANY POINT
 
     }
-    // i genuinely have no idea
-    // nah wait its just sending tag data (rotation, distance etc.) to telemetry
+    // just sending tag data (rot, distance etc.) to telemetry
     void tagToTelemetry(AprilTagDetection detection)
     {
         telemetry.addLine(String.format("\nDetected tag ID=%d", detection.id));
+        /*
+        Unnecessary info
         telemetry.addLine(String.format("Translation X: %.2f feet", detection.pose.x*FEET_PER_METER));
         telemetry.addLine(String.format("Translation Y: %.2f feet", detection.pose.y*FEET_PER_METER));
         telemetry.addLine(String.format("Translation Z: %.2f feet", detection.pose.z*FEET_PER_METER));
         telemetry.addLine(String.format("Rotation Yaw: %.2f degrees", Math.toDegrees(detection.pose.yaw)));
         telemetry.addLine(String.format("Rotation Pitch: %.2f degrees", Math.toDegrees(detection.pose.pitch)));
         telemetry.addLine(String.format("Rotation Roll: %.2f degrees", Math.toDegrees(detection.pose.roll)));
+        */
     }
 }
