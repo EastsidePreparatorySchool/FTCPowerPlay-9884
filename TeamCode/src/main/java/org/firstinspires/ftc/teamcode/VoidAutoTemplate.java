@@ -26,12 +26,18 @@
  * this uses the pipeline (unedited, in ./apriltagvision/AprilTagDetectionPipeline) and the AprilTagAutonomousInitDetectionExample.java file as a base
  */
 
+/*
+ * might refactor at some point to be more modular
+ * package scanning for apriltag into .lib
+ */
+
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.teamcode.apriltagvision.AprilTagDetectionPipeline;
+import org.firstinspires.ftc.teamcode.lib.AprilTagDetectionPipeline;
+import org.firstinspires.ftc.teamcode.lib.Hardware;
 import org.openftc.apriltag.AprilTagDetection;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
@@ -40,7 +46,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import java.util.ArrayList;
 
 @Autonomous(name="Void Auto", group="9884")
-public class VoidAuto extends LinearOpMode {
+public class VoidAutoTemplate extends LinearOpMode {
     // INTRODUCE VARIABLES HERE
     Hardware robot = new Hardware();
     OpenCvCamera camera;
@@ -76,6 +82,7 @@ public class VoidAuto extends LinearOpMode {
 
     @Override
     public void runOpMode() {
+        // INIT CAMERA \\
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         // Initialize OpenCvCamera camera as webcam
         camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
@@ -95,8 +102,6 @@ public class VoidAuto extends LinearOpMode {
 
         telemetry.setMsTransmissionInterval(50);
 
-
-        // HARDWARE MAPPING HERE etc.
         robot.init(hardwareMap, telemetry);
         /*
          * The INIT-loop:

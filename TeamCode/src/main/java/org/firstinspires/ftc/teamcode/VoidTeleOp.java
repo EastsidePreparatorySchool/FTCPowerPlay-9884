@@ -3,6 +3,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.lib.Hardware;
+
 @TeleOp(name="Void TeleOp", group="9884")
 public class VoidTeleOp extends LinearOpMode {
     // Initialize hardware
