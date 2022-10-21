@@ -29,15 +29,20 @@ public class Hardware {
         DriveMotorBL = hwMap.dcMotor.get("BL");
         DriveMotorBR = hwMap.dcMotor.get("BR");
 
-        ClawSlide = hwMap.dcMotor.get("CLAWSLIDE");
+        //ClawSlide = hwMap.dcMotor.get("CLAWSLIDE");
 
-        ClawLeft = hwMap.servo.get("CLAWLEFT");
-        ClawRight = hwMap.servo.get("CLAWRIGHT");
+        //ClawLeft = hwMap.servo.get("CLAWLEFT");
+        //ClawRight = hwMap.servo.get("CLAWRIGHT");
 
-        DriveMotorFL.setDirection(DcMotor.Direction.FORWARD);
+        DriveMotorFL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        DriveMotorFR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        DriveMotorBL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        DriveMotorBR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        // builders have CTE
+        DriveMotorFL.setDirection(DcMotor.Direction.REVERSE);
         DriveMotorFR.setDirection(DcMotor.Direction.REVERSE);
-        DriveMotorBL.setDirection(DcMotor.Direction.FORWARD);
-        DriveMotorBR.setDirection(DcMotor.Direction.REVERSE);
+        DriveMotorBL.setDirection(DcMotor.Direction.REVERSE);
+        DriveMotorBR.setDirection(DcMotor.Direction.FORWARD);
     }
 
     // basic move functions for auto
@@ -51,7 +56,7 @@ public class Hardware {
 
     public void powerTime(double powerFL, double powerFR, double powerBL, double powerBR, int ms) {
         powerMotors(powerFL, powerFR, powerBL, powerBR);
-        sleep(ms);
+        threadsleep(ms);
         powerMotors(0, 0, 0, 0);
     }
 
@@ -65,7 +70,7 @@ public class Hardware {
         powerTime(power, -power, power, -power, ms);
     }
 
-    public void sleep(int ms) {try {Thread.sleep(ms);} catch (Exception e) {}}
+    public void threadsleep(int ms) {try {Thread.sleep(ms);} catch (Exception e) {}}
 
     // SLIDE AND CLAW FUNCTIONS HERE
 }

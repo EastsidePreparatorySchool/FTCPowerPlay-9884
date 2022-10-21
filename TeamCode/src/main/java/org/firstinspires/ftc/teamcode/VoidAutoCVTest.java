@@ -45,8 +45,8 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import java.util.ArrayList;
 
-@Autonomous(name="Void Auto", group="9884")
-public class VoidAutoTemplate extends LinearOpMode {
+@Autonomous(name="Void CV Test", group="9884")
+public class VoidAutoCVTest extends LinearOpMode {
     // INTRODUCE VARIABLES HERE
     Hardware robot = new Hardware();
     OpenCvCamera camera;

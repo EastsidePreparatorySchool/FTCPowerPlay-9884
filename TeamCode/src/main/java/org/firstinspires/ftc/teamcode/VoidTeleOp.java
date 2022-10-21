@@ -30,7 +30,6 @@ public class VoidTeleOp extends LinearOpMode {
             powerFR /= normalize;
             powerBL /= normalize;
             powerBR /= normalize;
-            // Power motors w/ values
             robot.powerMotors(powerFL,powerFR,powerBL,powerBR);
         }
     }
