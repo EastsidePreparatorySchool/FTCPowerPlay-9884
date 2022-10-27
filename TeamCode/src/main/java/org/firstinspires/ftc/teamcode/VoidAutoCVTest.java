@@ -56,7 +56,7 @@ public class VoidAutoCVTest extends LinearOpMode {
 
     // Lens intrinsics
     // UNITS ARE PIXELS
-    // NOTE: this calibration is for the C920 webcam at 800x448.
+    // NOTE: this calibration is for the C920 webcam at 800x448
     // You will need to do your own calibration for other configurations!
     // ^^^^^ NOT MY COMMENTS
     // ima be real idk how to calibrate it so im just gonna hope these values work w the camera we have
@@ -82,10 +82,10 @@ public class VoidAutoCVTest extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        // INIT CAMERA \\
+        // INIT CAMERA
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         // Initialize OpenCvCamera camera as webcam
-        camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
+        camera = OpenCvCameraFactory.getInstance().createWebcam(robot.Webcam, cameraMonitorViewId);
         // Initialize AprilTag pipeline
         aprilTagDetectionPipeline = new AprilTagDetectionPipeline(tagsize, fx, fy, cx, cy);
 
@@ -103,6 +103,9 @@ public class VoidAutoCVTest extends LinearOpMode {
         telemetry.setMsTransmissionInterval(50);
 
         robot.init(hardwareMap, telemetry);
+
+        telemetry.addData("lmao","lmao");
+        telemetry.update();
         /*
          * The INIT-loop:
          * This REPLACES waitForStart!
@@ -123,7 +126,7 @@ public class VoidAutoCVTest extends LinearOpMode {
                         break;
                     }
                 }
-                // TELEM IF RELEVANT TAG FOUND ^^^^
+                // TELEM IF RELEVANT TAG FOUND
                 if(tagFound) {
                     telemetry.addLine("Tag of interest is in sight!\n\nLocation data:");
                     tagToTelemetry(tagOfInterest);
@@ -170,11 +173,15 @@ public class VoidAutoCVTest extends LinearOpMode {
 
         // PUT AUTON CODE HERE (DRIVER PRESSED THE PLAY BUTTON!)
         // APRILTAG VALUE IS "tagid"  - VALUE CORRESPONDS TO SIDE OF SIGNAL, IF -1 NO TAG FOUND AT ANY POINT
+        if(tagsize == -1) {
+
+        } else {
+
+        }
 
     }
     // just sending tag data (rot, distance etc.) to telemetry
-    void tagToTelemetry(AprilTagDetection detection)
-    {
+    void tagToTelemetry(AprilTagDetection detection) {
         telemetry.addLine(String.format("\nDetected tag ID=%d", detection.id));
         /*
         Unnecessary info
