@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.lib;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -15,7 +16,7 @@ public class Hardware {
     public DcMotor DriveMotorBL = null;
     public DcMotor DriveMotorBR = null;
 
-    public DcMotor ClawSlide = null;
+    public DcMotor ArmMotor = null;
 
     public Servo ClawLeft = null;
     public Servo ClawRight = null;
@@ -33,7 +34,7 @@ public class Hardware {
         DriveMotorBL = hwMap.dcMotor.get("BL");
         DriveMotorBR = hwMap.dcMotor.get("BR");
 
-        // ArmMotor = hwMap.dcMotor.get("ARM");
+        ArmMotor = hwMap.dcMotor.get("ARM");
 
         // ClawLeft = hwMap.servo.get("CLAWLEFT");
         // ClawRight = hwMap.servo.get("CLAWRIGHT");
@@ -43,13 +44,19 @@ public class Hardware {
         DriveMotorBL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         DriveMotorBR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        // ArmMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        ArmMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        ArmMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        ArmMotor.setTargetPosition(0);
+        ArmMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         // builders have CTE please colleges do not admit them for engineering
         DriveMotorFL.setDirection(DcMotor.Direction.REVERSE);
         DriveMotorFR.setDirection(DcMotor.Direction.REVERSE);
         DriveMotorBL.setDirection(DcMotor.Direction.REVERSE);
         DriveMotorBR.setDirection(DcMotor.Direction.FORWARD);
+
+        ArmMotor.setDirection(DcMotorSimple.Direction.REVERSE);
     }
 
     // basic move functions for auto
@@ -80,4 +87,20 @@ public class Hardware {
     public void threadsleep(int ms) {try {Thread.sleep(ms);} catch (Exception e) {}}
 
     // ARM AND CLAW FUNCTIONS HERE
+
+    public void powerArm(double power) {
+        ArmMotor.setPower((power));
+    }
+
+    public void setArmPos(int pos) {
+        ArmMotor.setTargetPosition(pos);
+        ArmMotor.setPower(1);
+        ArmMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    }
+
+    public void setClawPos(double pos) {
+        ClawLeft.setPosition(pos);
+        ClawRight.setPosition(pos);
+    }
+
 }
