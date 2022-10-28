@@ -14,6 +14,8 @@ public class Hardware {
     public DcMotor DriveMotorLB = null;
     public DcMotor DriveMotorRB = null;
 
+    public Telemetry telemetry;
+
     public void init(HardwareMap hwMap, Telemetry tele) {
         DriveMotorLF = hwMap.dcMotor.get("LF");
         DriveMotorRF = hwMap.dcMotor.get("RF");
@@ -24,5 +26,7 @@ public class Hardware {
         DriveMotorRF.setDirection(DcMotor.Direction.REVERSE);
         DriveMotorLB.setDirection(DcMotor.Direction.FORWARD);
         DriveMotorRB.setDirection(DcMotor.Direction.REVERSE);
+
+        this.telemetry = tele;
     }
 }
