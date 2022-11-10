@@ -11,10 +11,8 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.SwitchableLight;
 import org.firstinspires.ftc.teamcode.lib.Hardware;
 
-@Autonomous(name="Void Auto Cycle Red", group="9884")
-// Only run in opposite starting positions (route can be mirrored)
-// Robot should go towards left
-    public class Autonomous1 extends LinearOpMode {
+@Autonomous(name="Void Auto Cycle Blue", group="9884")
+public class Autonomous2 extends LinearOpMode {
     Hardware robot = new Hardware();
 
     @Override
@@ -35,8 +33,16 @@ import org.firstinspires.ftc.teamcode.lib.Hardware;
         //robot can start with one cone in hand? If so add in later.
 
         // potential sensor
-        robot.powerTime(0.65, 0.65, 0.65, 0.65, 4000 );
-        robot.turn(0.5, 1000); // facing cone stack
+        robot.powerTime(0.65, 0.65, 0.65, 0.65, 3000 );
+        robot.turn(0.5, 1000);
+        // loop cycle here
+        robot.powerTime(0.65, 0.65, 0.65, 0.65, 2000);
+        //arm raise slightly, open claw, close claw
+        robot.powerTime(-0.65, -0.65, -0.65, -0.65, 3000);
+        robot.turn(0.5, 1000);
+        // arm raise, claw open
+        // cycle
+
         robot.powerTime(0.65, 0.65, 0.65, 0.65, 1500);
         // probably raise arm for cone stack, then grab
         robot.powerTime(-0.65,-0.65, -0.65, -0.65, 2000); // to the junction

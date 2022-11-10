@@ -11,16 +11,19 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.SwitchableLight;
 import org.firstinspires.ftc.teamcode.lib.Hardware;
 
-@Autonomous(name="Void Auto Cycle Red", group="9884")
-// Only run in opposite starting positions (route can be mirrored)
-// Robot should go towards left
-    public class Autonomous1 extends LinearOpMode {
+
+@Autonomous(name="Void Auto Strafe Left Middle Parking", group="9884")
+
+public class SimpleAutoStrafeRightMidPark extends LinearOpMode {
+
+    // declaring
+
     Hardware robot = new Hardware();
 
     @Override
     public void runOpMode() throws InterruptedException {
 
-        // Initializing
+        // initializing
 
         robot.init(hardwareMap, telemetry);
 
@@ -30,19 +33,11 @@ import org.firstinspires.ftc.teamcode.lib.Hardware;
         telemetry.update();
 
         // wait for start
+
         waitForStart();
 
-        //robot can start with one cone in hand? If so add in later.
+        // auto
 
-        // potential sensor
-        robot.powerTime(0.65, 0.65, 0.65, 0.65, 4000 );
-        robot.turn(0.5, 1000); // facing cone stack
-        robot.powerTime(0.65, 0.65, 0.65, 0.65, 1500);
-        // probably raise arm for cone stack, then grab
-        robot.powerTime(-0.65,-0.65, -0.65, -0.65, 2000); // to the junction
-        robot.turn(0.5, 1500);
-        // arm raise, lower.
-        //times are estimated.
-        //include strafe for navigating through cones and junctions.
+        robot.strafe(-0.65, 3000); // tweak for full park
     }
 }

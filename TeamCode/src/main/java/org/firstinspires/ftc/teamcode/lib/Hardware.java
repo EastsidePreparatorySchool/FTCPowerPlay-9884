@@ -17,8 +17,11 @@ public class Hardware {
 
     public DcMotor ClawSlide = null;
 
-    public Servo ClawLeft = null;
-    public Servo ClawRight = null;
+    //public Servo ClawLeft = null;
+    //public Servo ClawRight = null;
+    public Servo claw = null;
+
+    public final static double startClawPos = 0.0; // starting servo position
 
     public final double SPEED_CONSTANT = 0.65;
     public final double SLOWMODE_CONSTANT = 0.35;
@@ -35,8 +38,8 @@ public class Hardware {
 
         // ArmMotor = hwMap.dcMotor.get("ARM");
 
-        // ClawLeft = hwMap.servo.get("CLAWLEFT");
-        // ClawRight = hwMap.servo.get("CLAWRIGHT");
+        //ClawLeft = hwMap.servo.get("CLAWLEFT");
+        //ClawRight = hwMap.servo.get("CLAWRIGHT");
 
         DriveMotorFL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         DriveMotorFR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -74,10 +77,13 @@ public class Hardware {
     }
 
     public void strafe(double power, int ms) {
-        powerTime(power, -power, power, -power, ms);
+        powerTime(power, -power, -power, power, ms);
     }
 
     public void threadsleep(int ms) {try {Thread.sleep(ms);} catch (Exception e) {}}
 
     // ARM AND CLAW FUNCTIONS HERE
+
+    public void setClawPos(double rot) {
+    }
 }
