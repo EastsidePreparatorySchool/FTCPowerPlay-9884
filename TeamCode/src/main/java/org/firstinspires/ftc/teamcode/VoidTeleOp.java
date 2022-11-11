@@ -33,7 +33,7 @@ public class VoidTeleOp extends LinearOpMode {
          * RB - arm up (by cone height diff?) IMP
          * LT - slow mode hold IMP
          * RT - grab, release toggle IMP
-         * DPAD  - forward, back, left, right IMP
+         * DPAD - forward, back, left, right IMP
          * A,B,X,Y - different set arm heights for junctions IMP
          * * A - default pickup height (0 in encoder) IMP
          * * B, X, Y - low, medium, high junctions respectively IMP

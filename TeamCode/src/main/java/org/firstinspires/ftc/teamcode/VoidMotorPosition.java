@@ -23,7 +23,7 @@ public class VoidMotorPosition extends LinearOpMode {
         robot.setClawRot(robot.CLAW_OPEN_POSITION);
         while (opModeIsActive()) {
 
-            if(gamepad1.right_bumper && armBtnReleased) {
+            if(gamepad1.right_trigger > 0.5 && armBtnReleased) {
                 armPos += robot.ARM_INCREMENT_ENCODER_CONSTANT;
                 if(armPos > robot.ARM_NEVER_EXCEED) {
                     armPos = robot.ARM_NEVER_EXCEED;
@@ -31,7 +31,7 @@ public class VoidMotorPosition extends LinearOpMode {
                 robot.ArmMotor.setTargetPosition(armPos);
                 armBtnReleased=false;
             }
-            else if(gamepad1.left_bumper && armBtnReleased) {
+            else if(gamepad1.left_trigger > 0.5 && armBtnReleased) {
                 armPos -= robot.ARM_INCREMENT_ENCODER_CONSTANT/2;
                 if(armPos < 0) {
                     armPos = 0;
@@ -39,12 +39,12 @@ public class VoidMotorPosition extends LinearOpMode {
                 robot.ArmMotor.setTargetPosition(armPos);
                 armBtnReleased=false;
             }
-            if(!gamepad1.left_bumper && !gamepad1.right_bumper) {
+            if(gamepad1.left_trigger < 0.5 && gamepad1.right_trigger < 0.5) {
                 armBtnReleased = true;
             }
 
 
-            /*
+
             if(gamepad1.left_bumper && clawBtnReleased) {
                 if(clawPos-0.01<0) {
                     clawPos+=0.01;
@@ -62,13 +62,14 @@ public class VoidMotorPosition extends LinearOpMode {
             if(!gamepad1.left_bumper && !gamepad1.right_bumper) {
                 clawBtnReleased = true;
             }
-            */
 
             if (gamepad1.a) {
                 robot.setClawRot(robot.CLAW_OPEN_POSITION);
+                clawPos= robot.CLAW_OPEN_POSITION;
             }
             if (gamepad1.b) {
                 robot.setClawRot(robot.CLAW_CLOSED_POSITION);
+                clawPos= robot.CLAW_CLOSED_POSITION;
             }
 
 
@@ -76,6 +77,8 @@ public class VoidMotorPosition extends LinearOpMode {
             telemetry.addData("Arm Current Position", robot.ArmMotor.getCurrentPosition());
             telemetry.addData("Arm Target", armPos);
             telemetry.addData("Arm Internal Target", robot.ArmMotor.getTargetPosition());
+
+            telemetry.addData("Claw Pos", clawPos);
 
             telemetry.update();
         }

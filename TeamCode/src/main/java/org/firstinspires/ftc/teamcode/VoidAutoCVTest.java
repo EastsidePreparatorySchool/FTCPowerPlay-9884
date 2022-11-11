@@ -61,15 +61,17 @@ public class VoidAutoCVTest extends LinearOpMode {
     // ^^^^^ NOT MY COMMENTS
     // ima be real idk how to calibrate it so im just gonna hope these values work w the camera we have
     // we have logitech c270
-    double fx = 578.272;
-    double fy = 578.272;
-    double cx = 402.145;
-    double cy = 221.506;
+    // figured it out (?), used values in res/xml/teamwebcalibration.xml
+
+    double fx = 822.317;
+    double fy = 822.317;
+    double cx = 319.495;
+    double cy = 242.502;
 
     // UNITS ARE METERS
-    // assumed tag size - about 2 inches. not sure how this value plays into AprilTagDetectionPipeline but i sure hope it works
+    // assumed tag size - about 3.4 cm. not sure how this value plays into AprilTagDetectionPipeline but i sure hope it works
     // original value was .166
-    double tagsize = 0.051;
+    double tagsize = 0.034;
 
     // Tag ID 1,2,3 from the 36h11 family
 
@@ -85,7 +87,7 @@ public class VoidAutoCVTest extends LinearOpMode {
         // INIT CAMERA
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         // Initialize OpenCvCamera camera as webcam
-        camera = OpenCvCameraFactory.getInstance().createWebcam(robot.Webcam, cameraMonitorViewId);
+        camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
         // Initialize AprilTag pipeline
         aprilTagDetectionPipeline = new AprilTagDetectionPipeline(tagsize, fx, fy, cx, cy);
 
@@ -93,7 +95,7 @@ public class VoidAutoCVTest extends LinearOpMode {
         camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
             public void onOpened() {
-                camera.startStreaming(800,448, OpenCvCameraRotation.UPRIGHT);
+                camera.startStreaming(640,480, OpenCvCameraRotation.UPRIGHT);
             }
             @Override
             // elite error handling
@@ -173,11 +175,6 @@ public class VoidAutoCVTest extends LinearOpMode {
 
         // PUT AUTON CODE HERE (DRIVER PRESSED THE PLAY BUTTON!)
         // APRILTAG VALUE IS "tagid"  - VALUE CORRESPONDS TO SIDE OF SIGNAL, IF -1 NO TAG FOUND AT ANY POINT
-        if(tagsize == -1) {
-
-        } else {
-
-        }
 
     }
     // just sending tag data (rot, distance etc.) to telemetry
