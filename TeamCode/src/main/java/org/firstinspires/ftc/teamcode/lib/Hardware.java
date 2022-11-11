@@ -29,13 +29,13 @@ public class Hardware {
     public final int ARM_INCREMENT_ENCODER_CONSTANT = 600;
     public final int ARM_NEVER_EXCEED = 11000;
     public final double CLAW_OPEN_POSITION = 0.14;
-    public final double CLAW_CLOSED_POSITION = 0.33;
+    public final double CLAW_CLOSED_POSITION = 0.34;
 
 
     public Hardware() {}
 
     public void init(HardwareMap hwMap, Telemetry tele) {
-        // Webcam = hwMap.get(WebcamName.class, "Webcam 1");
+        Webcam = hwMap.get(WebcamName.class, "Webcam 1");
 
         DriveMotorFL = hwMap.dcMotor.get("FL");
         DriveMotorFR = hwMap.dcMotor.get("FR");
