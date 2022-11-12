@@ -9,6 +9,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 
 public class Hardware {
+
     public WebcamName Webcam = null;
 
     public DcMotor DriveMotorFL = null;
@@ -21,6 +22,8 @@ public class Hardware {
     public Servo ClawLeft = null;
     public Servo ClawRight = null;
 
+    // Speed, arm height, claw position constants
+
     public final double SPEED_CONSTANT = 0.5;
     public final double SLOWMODE_CONSTANT = 0.5;
     public final int LOW_JUNCTION_ENCODER_CONSTANT = 4800;
@@ -31,10 +34,32 @@ public class Hardware {
     public final double CLAW_OPEN_POSITION = 0.14;
     public final double CLAW_CLOSED_POSITION = 0.34;
 
+    // Logitech C270 lens intrinsics
+    // /TeamCode/src/main/res/xml/teamwebcamcalibrations.xml
+
+    public final double fx = 822.317;
+    public final double fy = 822.317;
+    public final double cx = 319.495;
+    public final double cy = 242.502;
+
+    // UNITS ARE METERS
+
+    public final double tagsize = 0.034;
+
+    // Tag ID 1,2,3 from the 36h11 family
+
+    public final int LEFT = 1;
+    public final int MIDDLE = 2;
+    public final int RIGHT = 3;
 
     public Hardware() {}
 
+    // overload init method, default no auto
     public void init(HardwareMap hwMap, Telemetry tele) {
+        init(hwMap, tele, false);
+    }
+
+    public void init(HardwareMap hwMap, Telemetry tele, boolean auto) {
         Webcam = hwMap.get(WebcamName.class, "Webcam 1");
 
         DriveMotorFL = hwMap.dcMotor.get("FL");
@@ -69,6 +94,14 @@ public class Hardware {
         DriveMotorBR.setDirection(DcMotor.Direction.FORWARD);
 
         ArmMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        // good for auto, test in teleop
+        if(auto) {
+            DriveMotorFL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            DriveMotorFR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            DriveMotorBL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            DriveMotorBR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        }
     }
 
     // basic move functions for auto
