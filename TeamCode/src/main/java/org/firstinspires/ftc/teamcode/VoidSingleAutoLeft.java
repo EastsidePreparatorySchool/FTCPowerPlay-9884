@@ -1,40 +1,9 @@
-/*
- * Copyright (c) 2021 OpenFTC Team
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
-
-/*
- * im gonna try to make this code as readable as possible because its not very clear what it's doing at a first glance
- * i stole most of this code from the openftc eocv apriltags library
- * OpenFTC/EOCV-AprilTag-Plugin/examples
- * this uses the pipeline (unedited, in ./apriltagvision/AprilTagDetectionPipeline) and the AprilTagAutonomousInitDetectionExample.java file as a base
- */
-
-/*
- * might refactor at some point to be more modular
- * package scanning for apriltag into .lib
- */
-
 package org.firstinspires.ftc.teamcode;
+
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+
 import org.firstinspires.ftc.teamcode.lib.AprilTagDetectionPipeline;
 import org.firstinspires.ftc.teamcode.lib.Hardware;
 import org.openftc.apriltag.AprilTagDetection;
@@ -44,8 +13,8 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import java.util.ArrayList;
 
-@Autonomous(name="Void CV Test", group="9884")
-public class VoidAutoCVTest extends LinearOpMode {
+@Autonomous(name="Void Auto Strafe Left", group="9884")
+public class VoidSingleAutoLeft extends LinearOpMode {
     // INTRODUCE VARIABLES HERE
     Hardware robot = new Hardware();
     OpenCvCamera camera;
@@ -58,6 +27,8 @@ public class VoidAutoCVTest extends LinearOpMode {
     @Override
     public void runOpMode() {
         robot.init(hardwareMap,telemetry,true);
+        robot.setClawRot(robot.CLAW_CLOSED_POSITION);
+        robot.ArmMotor.setTargetPosition(robot.LOW_JUNCTION_ENCODER_CONSTANT);
         // INIT CAMERA
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         // Initialize OpenCvCamera camera as webcam
@@ -129,18 +100,23 @@ public class VoidAutoCVTest extends LinearOpMode {
 
         // PUT AUTON CODE HERE (DRIVER PRESSED THE PLAY BUTTON!)
         // APRILTAG VALUE IS "tagid"  - VALUE CORRESPONDS TO SIDE OF SIGNAL, IF -1 NO TAG FOUND AT ANY POINT
-
+        robot.driveInches(23.5);
+        robot.strafeInches(35.25);
+        robot.ArmMotor.setTargetPosition(robot.HIGH_JUNCTION_ENCODER_CONSTANT);
+        robot.driveInches(3);
+        robot.setClawRot(robot.CLAW_OPEN_POSITION);
+        robot.driveInches(-3);
+        robot.ArmMotor.setTargetPosition(0);
+        switch (tagid) {
+            case 1:
+                robot.strafeInches(-58.75);
+                break;
+            case 2:
+                robot.strafeInches(-35.25);
+                break;
+            case 3:
+                robot.strafeInches(-11.75);
+                break;
+        }
     }
-    // just sending tag data (rot, distance etc.) to telemetry
-    /*
-    void tagToTelemetry(AprilTagDetection detection) {
-        telemetry.addLine(String.format("\nDetected tag ID=%d", detection.id));
-        telemetry.addLine(String.format("Translation X: %.2f feet", detection.pose.x*FEET_PER_METER));
-        telemetry.addLine(String.format("Translation Y: %.2f feet", detection.pose.y*FEET_PER_METER));
-        telemetry.addLine(String.format("Translation Z: %.2f feet", detection.pose.z*FEET_PER_METER));
-        telemetry.addLine(String.format("Rotation Yaw: %.2f degrees", Math.toDegrees(detection.pose.yaw)));
-        telemetry.addLine(String.format("Rotation Pitch: %.2f degrees", Math.toDegrees(detection.pose.pitch)));
-        telemetry.addLine(String.format("Rotation Roll: %.2f degrees", Math.toDegrees(detection.pose.roll)));
-    }
-    */
 }

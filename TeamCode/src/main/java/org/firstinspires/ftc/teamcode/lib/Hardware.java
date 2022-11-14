@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.lib;
 
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -9,6 +10,8 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 
 public class Hardware {
+
+    public DcMotor[] driveMotors;
 
     public WebcamName Webcam = null;
 
@@ -33,6 +36,14 @@ public class Hardware {
     public final int ARM_NEVER_EXCEED = 11000;
     public final double CLAW_OPEN_POSITION = 0.14;
     public final double CLAW_CLOSED_POSITION = 0.34;
+
+    // Values for encoder based auto
+
+    public final int WHEEL_DIAMETER = 100;
+    public final double WHEEL_PPR = 145.1;
+    public final double WHEEL_CIRCUM_INCHES = (WHEEL_DIAMETER/25.4)*(Math.PI);
+    public final double WHEEL_TICKS_PER_INCH = WHEEL_CIRCUM_INCHES/WHEEL_PPR;
+    public final int WHEEL_LATERAL_MULTIPLIER = 1;
 
     // Logitech C270 lens intrinsics
     // /TeamCode/src/main/res/xml/teamwebcamcalibrations.xml
@@ -62,10 +73,17 @@ public class Hardware {
     public void init(HardwareMap hwMap, Telemetry tele, boolean auto) {
         Webcam = hwMap.get(WebcamName.class, "Webcam 1");
 
+        BNO055IMU imu = hwMap.get(BNO055IMU.class, "imu");
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+        imu.initialize(parameters);
+
         DriveMotorFL = hwMap.dcMotor.get("FL");
         DriveMotorFR = hwMap.dcMotor.get("FR");
         DriveMotorBL = hwMap.dcMotor.get("BL");
         DriveMotorBR = hwMap.dcMotor.get("BR");
+
+        driveMotors = new DcMotor[]{DriveMotorFL,DriveMotorFR,DriveMotorBL,DriveMotorBR};
 
         ArmMotor = hwMap.dcMotor.get("ARM");
 
@@ -74,10 +92,9 @@ public class Hardware {
 
         ClawRight.setDirection(Servo.Direction.REVERSE);
 
-        DriveMotorFL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        DriveMotorFR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        DriveMotorBL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        DriveMotorBR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        for(DcMotor motor : driveMotors) {
+            motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        }
 
         ArmMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         ArmMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -95,12 +112,14 @@ public class Hardware {
 
         ArmMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        // good for auto, test in teleop
         if(auto) {
-            DriveMotorFL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            DriveMotorFR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            DriveMotorBL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            DriveMotorBR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            for(DcMotor motor : driveMotors) {
+                motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+                motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                motor.setTargetPosition(0);
+                motor.setPower(0.65);
+            }
         }
     }
 
@@ -117,6 +136,27 @@ public class Hardware {
         powerMotors(powerFL, powerFR, powerBL, powerBR);
         threadsleep(ms);
         powerMotors(0, 0, 0, 0);
+    }
+
+    public void driveTime(double power, int ms) {
+        powerMotors(power, power, power, power);
+        threadsleep(ms);
+        powerMotors(0, 0, 0, 0);
+    }
+
+    // USE THESE FOR AUTO, TIME BASED AUTO IS NOT A GOOD IDEA
+
+    public void driveInches(double inches) {
+        for(DcMotor motor : driveMotors) {
+            motor.setTargetPosition(motor.getCurrentPosition()+(int)Math.round(inches*WHEEL_TICKS_PER_INCH));
+        }
+    }
+
+    public void strafeInches(double inches) {
+        DriveMotorFL.setTargetPosition(DriveMotorFL.getCurrentPosition()+(int)Math.round(inches*WHEEL_TICKS_PER_INCH*WHEEL_LATERAL_MULTIPLIER));
+        DriveMotorBL.setTargetPosition(DriveMotorBL.getCurrentPosition()-(int)Math.round(inches*WHEEL_TICKS_PER_INCH*WHEEL_LATERAL_MULTIPLIER));
+        DriveMotorFR.setTargetPosition(DriveMotorFR.getCurrentPosition()-(int)Math.round(inches*WHEEL_TICKS_PER_INCH*WHEEL_LATERAL_MULTIPLIER));
+        DriveMotorBR.setTargetPosition(DriveMotorBR.getCurrentPosition()+(int)Math.round(inches*WHEEL_TICKS_PER_INCH*WHEEL_LATERAL_MULTIPLIER));
     }
 
     // FOR TURN AND STRAFE, -power IS TURN/STRAFE LEFT, +power IS TURN/STRAFE RIGHT
