@@ -13,7 +13,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import java.util.ArrayList;
 
-@Autonomous(name="Void Auto Strafe Left", group="9884")
+@Autonomous(name="Void Single Auto Left", group="9884")
 public class VoidSingleAutoLeft extends LinearOpMode {
     // INTRODUCE VARIABLES HERE
     Hardware robot = new Hardware();

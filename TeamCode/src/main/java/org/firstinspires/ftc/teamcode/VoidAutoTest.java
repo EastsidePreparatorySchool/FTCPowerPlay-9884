@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
@@ -12,8 +13,8 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import java.util.ArrayList;
 
-@Autonomous(name="Void Single Auto Right", group="9884")
-public class VoidSingleAutoRight extends LinearOpMode {
+@Autonomous(name="Void Auto Test", group="9884")
+public class VoidAutoTest extends LinearOpMode {
     // INTRODUCE VARIABLES HERE
     Hardware robot = new Hardware();
     OpenCvCamera camera;
@@ -27,7 +28,6 @@ public class VoidSingleAutoRight extends LinearOpMode {
     public void runOpMode() {
         robot.init(hardwareMap,telemetry,true);
         robot.setClawRot(robot.CLAW_CLOSED_POSITION);
-        robot.ArmMotor.setTargetPosition(robot.LOW_JUNCTION_ENCODER_CONSTANT);
         // INIT CAMERA
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         // Initialize OpenCvCamera camera as webcam
@@ -99,23 +99,6 @@ public class VoidSingleAutoRight extends LinearOpMode {
 
         // PUT AUTON CODE HERE (DRIVER PRESSED THE PLAY BUTTON!)
         // APRILTAG VALUE IS "tagid"  - VALUE CORRESPONDS TO SIDE OF SIGNAL, IF -1 NO TAG FOUND AT ANY POINT
-        robot.driveInches(23.5);
-        robot.strafeInches(-35.25);
-        robot.ArmMotor.setTargetPosition(robot.HIGH_JUNCTION_ENCODER_CONSTANT);
-        robot.driveInches(3);
-        robot.setClawRot(robot.CLAW_OPEN_POSITION);
-        robot.driveInches(-3);
-        robot.ArmMotor.setTargetPosition(0);
-        switch (tagid) {
-            case 1:
-                robot.strafeInches(11.75);
-                break;
-            case 2:
-                robot.strafeInches(35.25);
-                break;
-            case 3:
-                robot.strafeInches(58.75);
-                break;
-        }
+        robot.driveInches(5);
     }
 }

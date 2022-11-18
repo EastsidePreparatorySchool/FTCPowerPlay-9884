@@ -92,9 +92,10 @@ public class Hardware {
 
         ClawRight.setDirection(Servo.Direction.REVERSE);
 
-        for(DcMotor motor : driveMotors) {
-            motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        }
+        DriveMotorFL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        DriveMotorFR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        DriveMotorBL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        DriveMotorBR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         ArmMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         ArmMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -113,13 +114,30 @@ public class Hardware {
         ArmMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
         if(auto) {
-            for(DcMotor motor : driveMotors) {
-                motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-                motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                motor.setTargetPosition(0);
-                motor.setPower(0.65);
+            DriveMotorFL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            DriveMotorFL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            DriveMotorFL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            DriveMotorFL.setTargetPosition(0);
+            DriveMotorFL.setPower(0.65);
+            DriveMotorBL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            DriveMotorBL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            DriveMotorBL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            DriveMotorBL.setTargetPosition(0);
+            DriveMotorBL.setPower(0.65);
+            DriveMotorFR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            DriveMotorFR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            DriveMotorFR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            DriveMotorFR.setTargetPosition(0);
+            DriveMotorFR.setPower(0.65);
+            DriveMotorBR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            DriveMotorBR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            DriveMotorBR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            DriveMotorBR.setTargetPosition(0);
+            DriveMotorBR.setPower(0.65);
+            for(DcMotor m : driveMotors) {
+                tele.addLine(m.toString());
             }
+
         }
     }
 
@@ -150,6 +168,7 @@ public class Hardware {
         for(DcMotor motor : driveMotors) {
             motor.setTargetPosition(motor.getCurrentPosition()+(int)Math.round(inches*WHEEL_TICKS_PER_INCH));
         }
+        DriveMotorFL.setTargetPosition((int)Math.round(inches*WHEEL_TICKS_PER_INCH));
     }
 
     public void strafeInches(double inches) {
