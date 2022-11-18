@@ -55,7 +55,7 @@ public class Hardware {
 
     // UNITS ARE METERS
 
-    public final double tagsize = 0.034;
+    public final double tagsize = 0.051;
 
     // Tag ID 1,2,3 from the 36h11 family
 
