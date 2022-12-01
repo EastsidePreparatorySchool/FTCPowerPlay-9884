@@ -73,11 +73,6 @@ public class Hardware {
     public void init(HardwareMap hwMap, Telemetry tele, boolean auto) {
         Webcam = hwMap.get(WebcamName.class, "Webcam 1");
 
-        BNO055IMU imu = hwMap.get(BNO055IMU.class, "imu");
-        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
-        imu.initialize(parameters);
-
         DriveMotorFL = hwMap.dcMotor.get("FL");
         DriveMotorFR = hwMap.dcMotor.get("FR");
         DriveMotorBL = hwMap.dcMotor.get("BL");
@@ -168,7 +163,7 @@ public class Hardware {
         for(DcMotor motor : driveMotors) {
             motor.setTargetPosition(motor.getCurrentPosition()+(int)Math.round(inches*WHEEL_TICKS_PER_INCH));
         }
-        DriveMotorFL.setTargetPosition((int)Math.round(inches*WHEEL_TICKS_PER_INCH));
+        DriveMotorFR.setTargetPosition((int)Math.round(inches*WHEEL_TICKS_PER_INCH));
     }
 
     public void strafeInches(double inches) {
