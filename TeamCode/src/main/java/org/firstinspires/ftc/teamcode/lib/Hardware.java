@@ -42,7 +42,7 @@ public class Hardware {
     public final int WHEEL_DIAMETER = 100;
     public final double WHEEL_PPR = 145.1;
     public final double WHEEL_CIRCUM_INCHES = (WHEEL_DIAMETER/25.4)*(Math.PI);
-    public final double WHEEL_TICKS_PER_INCH = WHEEL_CIRCUM_INCHES/WHEEL_PPR;
+    public final double WHEEL_TICKS_PER_INCH = WHEEL_PPR/WHEEL_CIRCUM_INCHES;
     public final int WHEEL_LATERAL_MULTIPLIER = 1;
 
     // Logitech C270 lens intrinsics
@@ -109,30 +109,13 @@ public class Hardware {
         ArmMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
         if(auto) {
-            DriveMotorFL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            DriveMotorFL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            DriveMotorFL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            DriveMotorFL.setTargetPosition(0);
-            DriveMotorFL.setPower(0.65);
-            DriveMotorBL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            DriveMotorBL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            DriveMotorBL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            DriveMotorBL.setTargetPosition(0);
-            DriveMotorBL.setPower(0.65);
-            DriveMotorFR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            DriveMotorFR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            DriveMotorFR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            DriveMotorFR.setTargetPosition(0);
-            DriveMotorFR.setPower(0.65);
-            DriveMotorBR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            DriveMotorBR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            DriveMotorBR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            DriveMotorBR.setTargetPosition(0);
-            DriveMotorBR.setPower(0.65);
             for(DcMotor m : driveMotors) {
-                tele.addLine(m.toString());
+                m.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+                m.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                m.setTargetPosition(0);
+                m.setPower(0.3);
+                m.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             }
-
         }
     }
 
@@ -151,26 +134,44 @@ public class Hardware {
         powerMotors(0, 0, 0, 0);
     }
 
-    public void driveTime(double power, int ms) {
-        powerMotors(power, power, power, power);
-        threadsleep(ms);
-        powerMotors(0, 0, 0, 0);
-    }
-
     // USE THESE FOR AUTO, TIME BASED AUTO IS NOT A GOOD IDEA
 
-    public void driveInches(double inches) {
+    public void driveInches(double inches, Telemetry tele) {
         for(DcMotor motor : driveMotors) {
-            motor.setTargetPosition(motor.getCurrentPosition()+(int)Math.round(inches*WHEEL_TICKS_PER_INCH));
+            double distDbl = inches * WHEEL_TICKS_PER_INCH;
+            double distRnd = Math.round(distDbl);
+            int distInt = (int) distRnd;
+            tele.addData("distance (double): ", distDbl);
+            tele.addData("distance (rounded): ", distRnd);
+            tele.addData("distance (int): ", distInt);
+            motor.setTargetPosition(motor.getCurrentPosition() + distInt);
+            tele.update();
         }
-        DriveMotorFR.setTargetPosition((int)Math.round(inches*WHEEL_TICKS_PER_INCH));
+
+        while (DriveMotorFR.isBusy() || DriveMotorBR.isBusy() || DriveMotorFL.isBusy() || DriveMotorBL.isBusy()){
+            tele.addData("pos", DriveMotorFR.getCurrentPosition());
+            tele.addData("pos", DriveMotorBR.getCurrentPosition());
+            tele.addData("pos", DriveMotorFL.getCurrentPosition());
+            tele.addData("pos", DriveMotorBL.getCurrentPosition());
+            tele.update();
+        }
     }
 
-    public void strafeInches(double inches) {
-        DriveMotorFL.setTargetPosition(DriveMotorFL.getCurrentPosition()+(int)Math.round(inches*WHEEL_TICKS_PER_INCH*WHEEL_LATERAL_MULTIPLIER));
-        DriveMotorBL.setTargetPosition(DriveMotorBL.getCurrentPosition()-(int)Math.round(inches*WHEEL_TICKS_PER_INCH*WHEEL_LATERAL_MULTIPLIER));
-        DriveMotorFR.setTargetPosition(DriveMotorFR.getCurrentPosition()-(int)Math.round(inches*WHEEL_TICKS_PER_INCH*WHEEL_LATERAL_MULTIPLIER));
-        DriveMotorBR.setTargetPosition(DriveMotorBR.getCurrentPosition()+(int)Math.round(inches*WHEEL_TICKS_PER_INCH*WHEEL_LATERAL_MULTIPLIER));
+    public void strafeInches(double inches, Telemetry tele) {
+        double distDbl = inches * WHEEL_TICKS_PER_INCH * WHEEL_LATERAL_MULTIPLIER;
+        double distRnd = Math.round(distDbl);
+        int distInt = (int) distRnd;
+        DriveMotorFL.setTargetPosition(DriveMotorFL.getCurrentPosition()+distInt);
+        DriveMotorBL.setTargetPosition(DriveMotorBL.getCurrentPosition()-distInt);
+        DriveMotorFR.setTargetPosition(DriveMotorFR.getCurrentPosition()-distInt);
+        DriveMotorBR.setTargetPosition(DriveMotorBR.getCurrentPosition()+distInt);
+        while (DriveMotorFR.isBusy() || DriveMotorBR.isBusy() || DriveMotorFL.isBusy() || DriveMotorBL.isBusy()){
+            tele.addData("pos", DriveMotorFR.getCurrentPosition());
+            tele.addData("pos", DriveMotorBR.getCurrentPosition());
+            tele.addData("pos", DriveMotorFL.getCurrentPosition());
+            tele.addData("pos", DriveMotorBL.getCurrentPosition());
+            tele.update();
+        }
     }
 
     // FOR TURN AND STRAFE, -power IS TURN/STRAFE LEFT, +power IS TURN/STRAFE RIGHT

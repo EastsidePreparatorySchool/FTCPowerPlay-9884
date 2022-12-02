@@ -100,22 +100,22 @@ public class VoidSingleAutoLeft extends LinearOpMode {
 
         // PUT AUTON CODE HERE (DRIVER PRESSED THE PLAY BUTTON!)
         // APRILTAG VALUE IS "tagid"  - VALUE CORRESPONDS TO SIDE OF SIGNAL, IF -1 NO TAG FOUND AT ANY POINT
-        robot.driveInches(23.5);
-        robot.strafeInches(35.25);
+        robot.driveInches(23.5, telemetry);
+        robot.strafeInches(35.25, telemetry);
         robot.ArmMotor.setTargetPosition(robot.HIGH_JUNCTION_ENCODER_CONSTANT);
-        robot.driveInches(3);
+        robot.driveInches(3, telemetry);
         robot.setClawRot(robot.CLAW_OPEN_POSITION);
-        robot.driveInches(-3);
+        robot.driveInches(-3, telemetry);
         robot.ArmMotor.setTargetPosition(0);
         switch (tagid) {
             case 1:
-                robot.strafeInches(-58.75);
+                robot.strafeInches(-58.75, telemetry);
                 break;
             case 2:
-                robot.strafeInches(-35.25);
+                robot.strafeInches(-35.25, telemetry);
                 break;
             case 3:
-                robot.strafeInches(-11.75);
+                robot.strafeInches(-11.75, telemetry);
                 break;
         }
     }
