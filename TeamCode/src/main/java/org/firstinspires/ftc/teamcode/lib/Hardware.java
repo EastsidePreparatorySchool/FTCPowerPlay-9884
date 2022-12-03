@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.lib;
 
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -9,6 +10,9 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 
 public class Hardware {
+
+    public DcMotor[] driveMotors;
+
     public WebcamName Webcam = null;
 
     public DcMotor DriveMotorFL = null;
@@ -21,6 +25,8 @@ public class Hardware {
     public Servo ClawLeft = null;
     public Servo ClawRight = null;
 
+    // Speed, arm height, claw position constants
+
     public final double SPEED_CONSTANT = 0.5;
     public final double SLOWMODE_CONSTANT = 0.5;
     public final int LOW_JUNCTION_ENCODER_CONSTANT = 4800;
@@ -28,19 +34,58 @@ public class Hardware {
     public final int HIGH_JUNCTION_ENCODER_CONSTANT = 11000;
     public final int ARM_INCREMENT_ENCODER_CONSTANT = 600;
     public final int ARM_NEVER_EXCEED = 11000;
-    public final double CLAW_OPEN_POSITION = 0.14;
+    public final double LEFT_CLAW_OPEN_POSITION = 0.15;
+    public final double RIGHT_CLAW_OPEN_POSITION = 0.2;
     public final double CLAW_CLOSED_POSITION = 0.34;
 
+    // Values for encoder based auto
+
+    public final int WHEEL_DIAMETER = 100;
+    public final double WHEEL_PPR = 537.7;
+    public final double WHEEL_CIRCUM_INCHES = (WHEEL_DIAMETER/25.4)*(Math.PI);
+    public final double WHEEL_TICKS_PER_INCH = WHEEL_PPR/WHEEL_CIRCUM_INCHES;
+    public final int WHEEL_FORWARD_MULTIPLIER = 1;
+    public final int WHEEL_LATERAL_MULTIPLIER = 1;
+
+    // CONSTANTS FOR TIME BASED AUTO :(
+    public final double MS_PER_FOOT = 1100;
+    public final double MS_PER_INCH = MS_PER_FOOT/12;
+    public final double MS_LATERAL_MULTIPLIER = 1.76;
+
+    // Logitech C270 lens intrinsics
+    // /TeamCode/src/main/res/xml/teamwebcamcalibrations.xml
+
+    public final double fx = 822.317;
+    public final double fy = 822.317;
+    public final double cx = 319.495;
+    public final double cy = 242.502;
+
+    // UNITS ARE METERS
+
+    public final double tagsize = 0.051;
+
+    // Tag ID 1,2,3 from the 36h11 family
+
+    public final int LEFT = 1;
+    public final int MIDDLE = 2;
+    public final int RIGHT = 3;
 
     public Hardware() {}
 
+    // overload init method, default no auto
     public void init(HardwareMap hwMap, Telemetry tele) {
+        init(hwMap, tele, false);
+    }
+
+    public void init(HardwareMap hwMap, Telemetry tele, boolean auto) {
         Webcam = hwMap.get(WebcamName.class, "Webcam 1");
 
         DriveMotorFL = hwMap.dcMotor.get("FL");
         DriveMotorFR = hwMap.dcMotor.get("FR");
         DriveMotorBL = hwMap.dcMotor.get("BL");
         DriveMotorBR = hwMap.dcMotor.get("BR");
+
+        driveMotors = new DcMotor[]{DriveMotorFL,DriveMotorFR,DriveMotorBL,DriveMotorBR};
 
         ArmMotor = hwMap.dcMotor.get("ARM");
 
@@ -69,6 +114,12 @@ public class Hardware {
         DriveMotorBR.setDirection(DcMotor.Direction.FORWARD);
 
         ArmMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        if(auto) {
+            for(DcMotor m : driveMotors) {
+                m.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            }
+        }
     }
 
     // basic move functions for auto
@@ -86,6 +137,65 @@ public class Hardware {
         powerMotors(0, 0, 0, 0);
     }
 
+    public void driveTimeInches(double inches, boolean forwards) {
+        if (forwards) {
+            powerTime(SPEED_CONSTANT*SLOWMODE_CONSTANT,SPEED_CONSTANT*SLOWMODE_CONSTANT,SPEED_CONSTANT*SLOWMODE_CONSTANT,SPEED_CONSTANT*SLOWMODE_CONSTANT,(int)Math.round(inches*MS_PER_INCH));
+
+        } else {
+            powerTime(-SPEED_CONSTANT * SLOWMODE_CONSTANT, -SPEED_CONSTANT * SLOWMODE_CONSTANT, -SPEED_CONSTANT * SLOWMODE_CONSTANT, -SPEED_CONSTANT * SLOWMODE_CONSTANT, (int) Math.round(inches * MS_PER_INCH));
+        }
+    }
+
+    public void strafeTimeInches(double inches, boolean right) {
+        if(right){
+            powerTime(SPEED_CONSTANT*SLOWMODE_CONSTANT,-SPEED_CONSTANT*SLOWMODE_CONSTANT,-SPEED_CONSTANT*SLOWMODE_CONSTANT,SPEED_CONSTANT*SLOWMODE_CONSTANT,(int)Math.round(inches*MS_PER_INCH*MS_LATERAL_MULTIPLIER));
+
+        } else {
+            powerTime(-SPEED_CONSTANT*SLOWMODE_CONSTANT,SPEED_CONSTANT*SLOWMODE_CONSTANT,SPEED_CONSTANT*SLOWMODE_CONSTANT,-SPEED_CONSTANT*SLOWMODE_CONSTANT,(int)Math.round(inches*MS_PER_INCH*MS_LATERAL_MULTIPLIER));
+
+        }
+    }
+    // USE THESE FOR AUTO, TIME BASED AUTO IS NOT A GOOD IDEA
+    // mvm we have to use time based auto for now, encoder cable broken
+
+    public void driveInches(double inches, Telemetry tele) {
+        for(DcMotor motor : driveMotors) {
+            double distDbl = inches * WHEEL_TICKS_PER_INCH * WHEEL_FORWARD_MULTIPLIER;
+            double distRnd = Math.round(distDbl);
+            int distInt = (int) distRnd;
+            tele.addData("distance (double): ", distDbl);
+            tele.addData("distance (rounded): ", distRnd);
+            tele.addData("distance (int): ", distInt);
+            motor.setTargetPosition(motor.getCurrentPosition() + distInt);
+            tele.update();
+        }
+
+        while (DriveMotorFR.isBusy() || DriveMotorBR.isBusy() || DriveMotorFL.isBusy() || DriveMotorBL.isBusy()){
+            tele.addData("pos", DriveMotorFR.getCurrentPosition());
+            tele.addData("pos", DriveMotorBR.getCurrentPosition());
+            tele.addData("pos", DriveMotorFL.getCurrentPosition());
+            tele.addData("pos", DriveMotorBL.getCurrentPosition());
+            tele.update();
+        }
+    }
+
+    public void strafeInches(double inches, Telemetry tele) {
+        double distDbl = inches * WHEEL_TICKS_PER_INCH * WHEEL_LATERAL_MULTIPLIER;
+        double distRnd = Math.round(distDbl);
+        int distInt = (int) distRnd;
+        DriveMotorFL.setTargetPosition(DriveMotorFL.getCurrentPosition()+distInt);
+        DriveMotorBL.setTargetPosition(DriveMotorBL.getCurrentPosition()-distInt);
+        DriveMotorFR.setTargetPosition(DriveMotorFR.getCurrentPosition()-distInt);
+        DriveMotorBR.setTargetPosition(DriveMotorBR.getCurrentPosition()+distInt);
+        while (DriveMotorFR.isBusy() || DriveMotorBR.isBusy() || DriveMotorFL.isBusy() || DriveMotorBL.isBusy()){
+            tele.addData("pos", DriveMotorFR.getCurrentPosition());
+            tele.addData("pos", DriveMotorBR.getCurrentPosition());
+            tele.addData("pos", DriveMotorFL.getCurrentPosition());
+            tele.addData("pos", DriveMotorBL.getCurrentPosition());
+            tele.update();
+        }
+    }
+
     // FOR TURN AND STRAFE, -power IS TURN/STRAFE LEFT, +power IS TURN/STRAFE RIGHT
 
     public void turn(double power, int ms) {
@@ -100,8 +210,8 @@ public class Hardware {
 
     // ARM AND CLAW FUNCTIONS HERE
 
-    public void setClawRot(double rot) {
-        ClawLeft.setPosition(rot);
-        ClawRight.setPosition(rot);
+    public void setClawRot(double left, double right) {
+        ClawLeft.setPosition(left);
+        ClawRight.setPosition(right);
     }
 }
