@@ -44,7 +44,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import java.util.ArrayList;
 
-@Autonomous(name="Void Auto Park Right", group="9884")
+@Autonomous(name="Void Auto Park", group="9884")
 public class VoidAutoPark extends LinearOpMode {
     // INTRODUCE VARIABLES HERE
     Hardware robot = new Hardware();
