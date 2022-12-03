@@ -14,7 +14,8 @@ public class VoidTeleOp extends LinearOpMode {
     private double mult = 1;
     private double power = 0;
     private boolean clawClose = false;
-    private boolean armBtnReleased = true;
+    private boolean rightArmBtnReleased = true;
+    private boolean leftArmBtnReleased = true;
     private boolean clawBtnReleased = true;
 
     @Override
@@ -24,6 +25,7 @@ public class VoidTeleOp extends LinearOpMode {
         telemetry.addData("please tell me this works", "this works");
         telemetry.update();
         ElapsedTime runtime = new ElapsedTime();
+        robot.setClawRot(robot.LEFT_CLAW_OPEN_POSITION, robot.RIGHT_CLAW_OPEN_POSITION);
         waitForStart();
         runtime.reset();
         /*
@@ -73,47 +75,55 @@ public class VoidTeleOp extends LinearOpMode {
 
             if(gamepad1.a) {
                 robot.ArmMotor.setTargetPosition(0);
+                armPos = 0;
             }
             else if(gamepad1.b) {
                 robot.ArmMotor.setTargetPosition(robot.LOW_JUNCTION_ENCODER_CONSTANT);
+                armPos = robot.LOW_JUNCTION_ENCODER_CONSTANT;
             }
             else if(gamepad1.x) {
                 robot.ArmMotor.setTargetPosition(robot.MED_JUNCTION_ENCODER_CONSTANT);
+                armPos = robot.MED_JUNCTION_ENCODER_CONSTANT;
             }
             else if(gamepad1.y) {
                 robot.ArmMotor.setTargetPosition(robot.HIGH_JUNCTION_ENCODER_CONSTANT);
+                armPos = robot.HIGH_JUNCTION_ENCODER_CONSTANT;
             }
 
             // arm increment code
 
-            if(gamepad1.right_bumper && armBtnReleased) {
+            if(gamepad1.right_bumper && rightArmBtnReleased) {
                 armPos+= robot.ARM_INCREMENT_ENCODER_CONSTANT;
                 if(armPos > robot.ARM_NEVER_EXCEED) {
                     armPos = robot.ARM_NEVER_EXCEED;
                 }
                 robot.ArmMotor.setTargetPosition(armPos);
-                armBtnReleased=false;
+                rightArmBtnReleased=false;
             }
-            else if(gamepad1.left_bumper && armBtnReleased) {
+            else if(gamepad1.left_bumper && leftArmBtnReleased) {
                 armPos-= robot.ARM_INCREMENT_ENCODER_CONSTANT/2;
                 if(armPos<0) {
                     armPos=0;
                 }
                 robot.ArmMotor.setTargetPosition(armPos);
-                armBtnReleased=false;
+                leftArmBtnReleased=false;
             }
 
-            if(!gamepad1.left_bumper && !gamepad1.right_bumper) {
-                armBtnReleased = true;
+
+            if(!gamepad1.left_bumper) {
+                leftArmBtnReleased = true;
+            }
+            if(!gamepad1.right_bumper) {
+                rightArmBtnReleased = true;
             }
 
             // claw toggle code
 
             if(gamepad1.right_trigger > 0.5 && clawBtnReleased) {
                 if(!clawClose) {
-                    robot.setClawRot(robot.CLAW_CLOSED_POSITION);
+                    robot.setClawRot(robot.CLAW_CLOSED_POSITION, robot.CLAW_CLOSED_POSITION);
                 } else {
-                    robot.setClawRot(robot.CLAW_OPEN_POSITION);
+                    robot.setClawRot(robot.LEFT_CLAW_OPEN_POSITION, robot.RIGHT_CLAW_OPEN_POSITION);
                 }
                 clawClose = !clawClose;
                 clawBtnReleased = false;

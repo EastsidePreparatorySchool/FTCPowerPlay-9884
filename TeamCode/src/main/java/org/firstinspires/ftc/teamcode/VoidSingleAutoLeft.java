@@ -27,7 +27,7 @@ public class VoidSingleAutoLeft extends LinearOpMode {
     @Override
     public void runOpMode() {
         robot.init(hardwareMap,telemetry,true);
-        robot.setClawRot(robot.CLAW_CLOSED_POSITION);
+        robot.setClawRot(robot.CLAW_CLOSED_POSITION, robot.CLAW_CLOSED_POSITION);
         robot.ArmMotor.setTargetPosition(robot.LOW_JUNCTION_ENCODER_CONSTANT);
         // INIT CAMERA
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
@@ -104,7 +104,7 @@ public class VoidSingleAutoLeft extends LinearOpMode {
         robot.strafeInches(35.25, telemetry);
         robot.ArmMotor.setTargetPosition(robot.HIGH_JUNCTION_ENCODER_CONSTANT);
         robot.driveInches(3, telemetry);
-        robot.setClawRot(robot.CLAW_OPEN_POSITION);
+        robot.setClawRot(robot.LEFT_CLAW_OPEN_POSITION, robot.RIGHT_CLAW_OPEN_POSITION);
         robot.driveInches(-3, telemetry);
         robot.ArmMotor.setTargetPosition(0);
         switch (tagid) {

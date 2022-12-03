@@ -34,16 +34,23 @@ public class Hardware {
     public final int HIGH_JUNCTION_ENCODER_CONSTANT = 11000;
     public final int ARM_INCREMENT_ENCODER_CONSTANT = 600;
     public final int ARM_NEVER_EXCEED = 11000;
-    public final double CLAW_OPEN_POSITION = 0.14;
+    public final double LEFT_CLAW_OPEN_POSITION = 0.15;
+    public final double RIGHT_CLAW_OPEN_POSITION = 0.2;
     public final double CLAW_CLOSED_POSITION = 0.34;
 
     // Values for encoder based auto
 
     public final int WHEEL_DIAMETER = 100;
-    public final double WHEEL_PPR = 145.1;
+    public final double WHEEL_PPR = 537.7;
     public final double WHEEL_CIRCUM_INCHES = (WHEEL_DIAMETER/25.4)*(Math.PI);
     public final double WHEEL_TICKS_PER_INCH = WHEEL_PPR/WHEEL_CIRCUM_INCHES;
+    public final int WHEEL_FORWARD_MULTIPLIER = 1;
     public final int WHEEL_LATERAL_MULTIPLIER = 1;
+
+    // CONSTANTS FOR TIME BASED AUTO :(
+    public final double MS_PER_FOOT = 1100;
+    public final double MS_PER_INCH = MS_PER_FOOT/12;
+    public final double MS_LATERAL_MULTIPLIER = 1.76;
 
     // Logitech C270 lens intrinsics
     // /TeamCode/src/main/res/xml/teamwebcamcalibrations.xml
@@ -111,10 +118,6 @@ public class Hardware {
         if(auto) {
             for(DcMotor m : driveMotors) {
                 m.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-                m.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                m.setTargetPosition(0);
-                m.setPower(0.3);
-                m.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             }
         }
     }
@@ -134,11 +137,30 @@ public class Hardware {
         powerMotors(0, 0, 0, 0);
     }
 
+    public void driveTimeInches(double inches, boolean forwards) {
+        if (forwards) {
+            powerTime(SPEED_CONSTANT*SLOWMODE_CONSTANT,SPEED_CONSTANT*SLOWMODE_CONSTANT,SPEED_CONSTANT*SLOWMODE_CONSTANT,SPEED_CONSTANT*SLOWMODE_CONSTANT,(int)Math.round(inches*MS_PER_INCH));
+
+        } else {
+            powerTime(-SPEED_CONSTANT * SLOWMODE_CONSTANT, -SPEED_CONSTANT * SLOWMODE_CONSTANT, -SPEED_CONSTANT * SLOWMODE_CONSTANT, -SPEED_CONSTANT * SLOWMODE_CONSTANT, (int) Math.round(inches * MS_PER_INCH));
+        }
+    }
+
+    public void strafeTimeInches(double inches, boolean right) {
+        if(right){
+            powerTime(SPEED_CONSTANT*SLOWMODE_CONSTANT,-SPEED_CONSTANT*SLOWMODE_CONSTANT,-SPEED_CONSTANT*SLOWMODE_CONSTANT,SPEED_CONSTANT*SLOWMODE_CONSTANT,(int)Math.round(inches*MS_PER_INCH*MS_LATERAL_MULTIPLIER));
+
+        } else {
+            powerTime(-SPEED_CONSTANT*SLOWMODE_CONSTANT,SPEED_CONSTANT*SLOWMODE_CONSTANT,SPEED_CONSTANT*SLOWMODE_CONSTANT,-SPEED_CONSTANT*SLOWMODE_CONSTANT,(int)Math.round(inches*MS_PER_INCH*MS_LATERAL_MULTIPLIER));
+
+        }
+    }
     // USE THESE FOR AUTO, TIME BASED AUTO IS NOT A GOOD IDEA
+    // mvm we have to use time based auto for now, encoder cable broken
 
     public void driveInches(double inches, Telemetry tele) {
         for(DcMotor motor : driveMotors) {
-            double distDbl = inches * WHEEL_TICKS_PER_INCH;
+            double distDbl = inches * WHEEL_TICKS_PER_INCH * WHEEL_FORWARD_MULTIPLIER;
             double distRnd = Math.round(distDbl);
             int distInt = (int) distRnd;
             tele.addData("distance (double): ", distDbl);
@@ -188,8 +210,8 @@ public class Hardware {
 
     // ARM AND CLAW FUNCTIONS HERE
 
-    public void setClawRot(double rot) {
-        ClawLeft.setPosition(rot);
-        ClawRight.setPosition(rot);
+    public void setClawRot(double left, double right) {
+        ClawLeft.setPosition(left);
+        ClawRight.setPosition(right);
     }
 }
