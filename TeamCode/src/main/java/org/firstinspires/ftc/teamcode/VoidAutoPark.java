@@ -134,14 +134,14 @@ public class VoidAutoPark extends LinearOpMode {
         robot.driveTimeInches(27, true);
         switch (tagid) {
             case 1:
-                robot.driveTimeInches(2.25, true);
+                robot.driveTimeInches(1.5, true);
                 robot.strafeTimeInches(26, false);
                 break;
             case 2:
                 break;
             case 3:
-                robot.driveTimeInches(2.25, false);
-                robot.strafeTimeInches(28, true);
+                robot.driveTimeInches(1.5, false);
+                robot.strafeTimeInches(26, true);
                 break;
             case -1:
                 break;
