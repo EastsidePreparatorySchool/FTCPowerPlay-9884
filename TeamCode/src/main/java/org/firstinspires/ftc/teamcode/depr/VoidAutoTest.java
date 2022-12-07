@@ -1,7 +1,8 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.depr;
 
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.lib.AprilTagDetectionPipeline;
@@ -12,24 +13,18 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import java.util.ArrayList;
-
-@Autonomous(name="Void Single Auto Left", group="9884")
-public class VoidSingleAutoLeft extends LinearOpMode {
+@Disabled
+@Autonomous(name="Void Auto Test", group="9884")
+public class VoidAutoTest extends LinearOpMode {
     // INTRODUCE VARIABLES HERE
     Hardware robot = new Hardware();
     OpenCvCamera camera;
     AprilTagDetectionPipeline aprilTagDetectionPipeline;
-
     int tagid = -1;
-
     AprilTagDetection tagOfInterest = null;
-
     @Override
     public void runOpMode() {
         robot.init(hardwareMap,telemetry,true);
-        robot.setClawRot(robot.CLAW_CLOSED_POSITION, robot.CLAW_CLOSED_POSITION);
-        robot.ArmMotor.setTargetPosition(robot.LOW_JUNCTION_ENCODER_CONSTANT);
-        // INIT CAMERA
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         // Initialize OpenCvCamera camera as webcam
         camera = OpenCvCameraFactory.getInstance().createWebcam(robot.Webcam, cameraMonitorViewId);
@@ -51,12 +46,12 @@ public class VoidSingleAutoLeft extends LinearOpMode {
 
         telemetry.addData("lmao","lmao");
         telemetry.update();
+        waitForStart();
         /*
-         * The INIT-loop:
-         * This REPLACES waitForStart!
-         * BEFORE ROBOT STARTS
-         */
-        while (!isStarted() && !isStopRequested()) {
+        // PUT AUTON CODE HERE (DRIVER PRESSED THE PLAY BUTTON!)
+        // APRILTAG VALUE IS "tagid"  - VALUE CORRESPONDS TO SIDE OF SIGNAL, IF -1 NO TAG FOUND AT ANY POINT
+        long stime = System.currentTimeMillis();
+        while(System.currentTimeMillis()-stime < 5000) {
             ArrayList<AprilTagDetection> currentDetections = aprilTagDetectionPipeline.getLatestDetections();
             // SOME TAG FOUND
             if(currentDetections.size() != 0) {
@@ -89,34 +84,7 @@ public class VoidSingleAutoLeft extends LinearOpMode {
             telemetry.update();
             sleep(20);
         }
-        // AFTER PLAY STARTED
-        // CHECK IF TAG WAS EVER SIGHTED DURING INIT LOOP
-
-        if(tagid!=-1) {
-            telemetry.addData("Tag Sighted During Init", tagid);
-        } else {
-            telemetry.addLine("No Tag Sighted During Init");
-        }
-
-        // PUT AUTON CODE HERE (DRIVER PRESSED THE PLAY BUTTON!)
-        // APRILTAG VALUE IS "tagid"  - VALUE CORRESPONDS TO SIDE OF SIGNAL, IF -1 NO TAG FOUND AT ANY POINT
-        robot.driveInches(23.5, telemetry);
-        robot.strafeInches(35.25, telemetry);
-        robot.ArmMotor.setTargetPosition(robot.HIGH_JUNCTION_ENCODER_CONSTANT);
-        robot.driveInches(3, telemetry);
-        robot.setClawRot(robot.LEFT_CLAW_OPEN_POSITION, robot.RIGHT_CLAW_OPEN_POSITION);
-        robot.driveInches(-3, telemetry);
-        robot.ArmMotor.setTargetPosition(0);
-        switch (tagid) {
-            case 1:
-                robot.strafeInches(-58.75, telemetry);
-                break;
-            case 2:
-                robot.strafeInches(-35.25, telemetry);
-                break;
-            case 3:
-                robot.strafeInches(-11.75, telemetry);
-                break;
-        }
+        */
+        robot.driveInches(12, telemetry);
     }
 }
