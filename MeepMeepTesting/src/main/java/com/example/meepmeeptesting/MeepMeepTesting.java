@@ -14,6 +14,7 @@ public class MeepMeepTesting {
         MeepMeep meepMeep = new MeepMeep(600);
 
         RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
+                // 16.5, 17.5
                 .setDimensions(16.5,17.5)
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
                 .setColorScheme(new ColorSchemeRedDark())
