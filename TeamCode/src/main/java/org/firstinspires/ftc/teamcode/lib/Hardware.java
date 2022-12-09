@@ -29,11 +29,12 @@ public class Hardware {
 
     public final double SPEED_CONSTANT = 0.5;
     public final double SLOWMODE_CONSTANT = 0.5;
-    public final int LOW_JUNCTION_ENCODER_CONSTANT = 4800;
-    public final int MED_JUNCTION_ENCODER_CONSTANT = 7800;
-    public final int HIGH_JUNCTION_ENCODER_CONSTANT = 11000;
+    public final double ARM_MOTOR_PPR = 1425.1;
+    public final int LOW_JUNCTION_ENCODER_CONSTANT = (int)Math.round(ARM_MOTOR_PPR*4800/1425.1);
+    public final int MED_JUNCTION_ENCODER_CONSTANT = (int)Math.round(ARM_MOTOR_PPR*7800/1425.1);
+    public final int HIGH_JUNCTION_ENCODER_CONSTANT = (int)Math.round(ARM_MOTOR_PPR*11000/1425.1);
     public final int ARM_INCREMENT_ENCODER_CONSTANT = 600;
-    public final int ARM_NEVER_EXCEED = 11000;
+    public final int ARM_NEVER_EXCEED = HIGH_JUNCTION_ENCODER_CONSTANT;
     public final double LEFT_CLAW_OPEN_POSITION = 0.15;
     public final double RIGHT_CLAW_OPEN_POSITION = 0.2;
     public final double CLAW_CLOSED_POSITION = 0.34;
@@ -118,6 +119,11 @@ public class Hardware {
         if(auto) {
             for(DcMotor m : driveMotors) {
                 m.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+                m.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                m.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                m.setTargetPosition(0);
+                m.setPower(1);
+                m.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             }
         }
     }
