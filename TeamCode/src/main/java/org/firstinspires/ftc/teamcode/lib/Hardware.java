@@ -8,6 +8,9 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 
 public class Hardware {
 
@@ -25,10 +28,12 @@ public class Hardware {
     public Servo ClawLeft = null;
     public Servo ClawRight = null;
 
-    // Speed, arm height, claw position constants
+    public BNO055IMU imu = null;
+    BNO055IMU.Parameters parameters = null;
+    // Speed, arm height, claw position constan
 
-    public final double SPEED_CONSTANT = 0.5;
-    public final double SLOWMODE_CONSTANT = 0.5;
+    public final double SPEED_CONSTANT = 0.75;
+    public final double SLOWMODE_CONSTANT = 0.33;
     public final double ARM_MOTOR_PPR = 1425.1;
     public final int LOW_JUNCTION_ENCODER_CONSTANT = (int)Math.round(ARM_MOTOR_PPR*4800/1425.1);
     public final int MED_JUNCTION_ENCODER_CONSTANT = (int)Math.round(ARM_MOTOR_PPR*7800/1425.1);
@@ -45,8 +50,8 @@ public class Hardware {
     public final double WHEEL_PPR = 537.7;
     public final double WHEEL_CIRCUM_INCHES = (WHEEL_DIAMETER/25.4)*(Math.PI);
     public final double WHEEL_TICKS_PER_INCH = WHEEL_PPR/WHEEL_CIRCUM_INCHES;
-    public final int WHEEL_FORWARD_MULTIPLIER = 1;
-    public final int WHEEL_LATERAL_MULTIPLIER = 1;
+    public final double WHEEL_FORWARD_MULTIPLIER = 0.96;
+    public final double WHEEL_LATERAL_MULTIPLIER = 1.1;
 
     // CONSTANTS FOR TIME BASED AUTO :(
     public final double MS_PER_FOOT = 1100;
@@ -80,6 +85,11 @@ public class Hardware {
 
     public void init(HardwareMap hwMap, Telemetry tele, boolean auto) {
         Webcam = hwMap.get(WebcamName.class, "Webcam 1");
+
+        imu = hwMap.get(BNO055IMU.class, "imu");
+        parameters = new BNO055IMU.Parameters();
+        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+        imu.initialize(parameters);
 
         DriveMotorFL = hwMap.dcMotor.get("FL");
         DriveMotorFR = hwMap.dcMotor.get("FR");
@@ -115,15 +125,12 @@ public class Hardware {
         DriveMotorBR.setDirection(DcMotor.Direction.FORWARD);
 
         ArmMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-
+        for(DcMotor m : driveMotors) {
+            m.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        }
         if(auto) {
             for(DcMotor m : driveMotors) {
                 m.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-                m.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-                m.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                m.setTargetPosition(0);
-                m.setPower(1);
-                m.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             }
         }
     }
@@ -161,8 +168,90 @@ public class Hardware {
 
         }
     }
+
     // USE THESE FOR AUTO, TIME BASED AUTO IS NOT A GOOD IDEA
     // mvm we have to use time based auto for now, encoder cable broken
+
+    public void turnDegrees(double power, double target, Telemetry tele) {
+        float heading = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
+        float absHeading=(heading+360)%360;
+        float turn = (float)((target-absHeading+540)%360)-180;
+        int dir = turn < 0 ? 1 : -1;
+        // clock 1 counter -1
+        power*=dir;
+        for (DcMotor motor : driveMotors) {
+            powerMotors(power, -power, power, -power);
+        }
+        while(!(absHeading>(target-1) && absHeading<(target+1))) {
+            absHeading = (imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle+360)%360;
+            tele.addData("internal heading",imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle);
+            tele.addData("abs heading",absHeading);
+
+        }
+        for (DcMotor motor : driveMotors) {
+            powerMotors(0, 0, 0, 0);
+        }
+    }
+
+    public void driveBlindInches(double inches, double power, Telemetry tele) {
+        double distDbl = inches * WHEEL_TICKS_PER_INCH * WHEEL_FORWARD_MULTIPLIER;
+        double distRnd = Math.round(distDbl);
+        int distInt = (int) distRnd;
+        for(DcMotor motor : driveMotors) {
+            motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            motor.setPower(power);
+        }
+        while(Math.abs(DriveMotorFL.getCurrentPosition())<distInt) {
+            tele.addData("pos", DriveMotorFR.getCurrentPosition());
+            tele.addData("pos", DriveMotorBR.getCurrentPosition());
+            tele.addData("pos", DriveMotorFL.getCurrentPosition());
+            tele.addData("pos", DriveMotorBL.getCurrentPosition());
+            tele.update();
+        }
+        for(DcMotor motor : driveMotors) {
+            motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            motor.setPower(0);
+        }
+        tele.addData("pos", DriveMotorFR.getCurrentPosition());
+        tele.addData("pos", DriveMotorBR.getCurrentPosition());
+        tele.addData("pos", DriveMotorFL.getCurrentPosition());
+        tele.addData("pos", DriveMotorBL.getCurrentPosition());
+        tele.update();
+    }
+
+    public void strafeBlindInches(double inches, double power, Telemetry tele) {
+        double distDbl = inches * WHEEL_TICKS_PER_INCH * WHEEL_LATERAL_MULTIPLIER;
+        double distRnd = Math.round(distDbl);
+        int distInt = (int) distRnd;
+        for(DcMotor motor : driveMotors) {
+            motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        }
+        DriveMotorFL.setPower(power);
+        DriveMotorFR.setPower(-power);
+        DriveMotorBL.setPower(-power);
+        DriveMotorBR.setPower(power);
+
+        while(Math.abs(DriveMotorFL.getCurrentPosition())<distInt) {
+            tele.addData("pos", DriveMotorFR.getCurrentPosition());
+            tele.addData("pos", DriveMotorBR.getCurrentPosition());
+            tele.addData("pos", DriveMotorFL.getCurrentPosition());
+            tele.addData("pos", DriveMotorBL.getCurrentPosition());
+            tele.update();
+        }
+        for(DcMotor motor : driveMotors) {
+            motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            motor.setPower(0);
+        }
+        tele.addData("pos", DriveMotorFR.getCurrentPosition());
+        tele.addData("pos", DriveMotorBR.getCurrentPosition());
+        tele.addData("pos", DriveMotorFL.getCurrentPosition());
+        tele.addData("pos", DriveMotorBL.getCurrentPosition());
+        tele.update();
+    }
 
     public void driveInches(double inches, Telemetry tele) {
         for(DcMotor motor : driveMotors) {
