@@ -31,9 +31,10 @@
  * package scanning for apriltag into .lib
  */
 
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.depr;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.lib.AprilTagDetectionPipeline;
 import org.firstinspires.ftc.teamcode.lib.Hardware;
@@ -43,9 +44,9 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import java.util.ArrayList;
-
-@Autonomous(name="Void Auto Park", group="9884")
-public class VoidAutoPark extends LinearOpMode {
+@Disabled
+@Autonomous(name="Void CV Test", group="9884")
+public class VoidAutoCVTest extends LinearOpMode {
     // INTRODUCE VARIABLES HERE
     Hardware robot = new Hardware();
     OpenCvCamera camera;
@@ -85,7 +86,6 @@ public class VoidAutoPark extends LinearOpMode {
          * This REPLACES waitForStart!
          * BEFORE ROBOT STARTS
          */
-        robot.setClawRot(robot.LEFT_CLAW_OPEN_POSITION, robot.RIGHT_CLAW_OPEN_POSITION);
         while (!isStarted() && !isStopRequested()) {
             ArrayList<AprilTagDetection> currentDetections = aprilTagDetectionPipeline.getLatestDetections();
             // SOME TAG FOUND
@@ -130,22 +130,6 @@ public class VoidAutoPark extends LinearOpMode {
 
         // PUT AUTON CODE HERE (DRIVER PRESSED THE PLAY BUTTON!)
         // APRILTAG VALUE IS "tagid"  - VALUE CORRESPONDS TO SIDE OF SIGNAL, IF -1 NO TAG FOUND AT ANY POINT
-        robot.setClawRot(robot.CLAW_CLOSED_POSITION, robot.CLAW_CLOSED_POSITION);
-        robot.driveTimeInches(27, true);
-        switch (tagid) {
-            case 1:
-                robot.driveTimeInches(2.25, true);
-                robot.strafeTimeInches(26, false);
-                break;
-            case 2:
-                break;
-            case 3:
-                robot.driveTimeInches(2.25, false);
-                robot.strafeTimeInches(28, true);
-                break;
-            case -1:
-                break;
 
-        }
     }
 }

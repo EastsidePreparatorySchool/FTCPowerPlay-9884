@@ -1,6 +1,4 @@
 package org.firstinspires.ftc.teamcode;
-
-
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
@@ -13,8 +11,8 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import java.util.ArrayList;
 
-@Autonomous(name="Void Single Auto Left", group="9884")
-public class VoidSingleAutoLeft extends LinearOpMode {
+@Autonomous(name="Void Auto Single Left", group="9884")
+public class VoidAutoSingleLeft extends LinearOpMode {
     // INTRODUCE VARIABLES HERE
     Hardware robot = new Hardware();
     OpenCvCamera camera;
@@ -27,8 +25,6 @@ public class VoidSingleAutoLeft extends LinearOpMode {
     @Override
     public void runOpMode() {
         robot.init(hardwareMap,telemetry,true);
-        robot.setClawRot(robot.CLAW_CLOSED_POSITION, robot.CLAW_CLOSED_POSITION);
-        robot.ArmMotor.setTargetPosition(robot.LOW_JUNCTION_ENCODER_CONSTANT);
         // INIT CAMERA
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         // Initialize OpenCvCamera camera as webcam
@@ -56,6 +52,7 @@ public class VoidSingleAutoLeft extends LinearOpMode {
          * This REPLACES waitForStart!
          * BEFORE ROBOT STARTS
          */
+        robot.setClawRot(robot.LEFT_CLAW_OPEN_POSITION, robot.RIGHT_CLAW_OPEN_POSITION);
         while (!isStarted() && !isStopRequested()) {
             ArrayList<AprilTagDetection> currentDetections = aprilTagDetectionPipeline.getLatestDetections();
             // SOME TAG FOUND
@@ -100,23 +97,47 @@ public class VoidSingleAutoLeft extends LinearOpMode {
 
         // PUT AUTON CODE HERE (DRIVER PRESSED THE PLAY BUTTON!)
         // APRILTAG VALUE IS "tagid"  - VALUE CORRESPONDS TO SIDE OF SIGNAL, IF -1 NO TAG FOUND AT ANY POINT
-        robot.driveInches(23.5, telemetry);
-        robot.strafeInches(35.25, telemetry);
+        robot.setClawRot(robot.CLAW_CLOSED_POSITION, robot.CLAW_CLOSED_POSITION);
+        robot.driveBlindInches(26.5, 0.3, telemetry);
         robot.ArmMotor.setTargetPosition(robot.HIGH_JUNCTION_ENCODER_CONSTANT);
-        robot.driveInches(3, telemetry);
+        robot.turnDegrees(0.15,0,telemetry);
+        robot.strafeBlindInches(23.5, 0.3, telemetry);
+        robot.turnDegrees(0.15,0,telemetry);
+        robot.strafeBlindInches(11.5, 0.3, telemetry);
+        robot.turnDegrees(0.15,0,telemetry);
+        robot.driveBlindInches(3,0.25,telemetry);
+        robot.threadsleep(500);
         robot.setClawRot(robot.LEFT_CLAW_OPEN_POSITION, robot.RIGHT_CLAW_OPEN_POSITION);
-        robot.driveInches(-3, telemetry);
+        robot.threadsleep(500);
+        robot.driveBlindInches(3.5,-0.25,telemetry);
         robot.ArmMotor.setTargetPosition(0);
+        robot.turnDegrees(0.15,0,telemetry);
+        robot.threadsleep(2000);
         switch (tagid) {
             case 1:
-                robot.strafeInches(-58.75, telemetry);
+                robot.driveBlindInches(1,0.3,telemetry);
+                robot.strafeBlindInches(34.75, -0.3, telemetry);
+                robot.turnDegrees(0.15,0,telemetry);
+                robot.driveBlindInches(2,0.15, telemetry);
+                robot.turnDegrees(0.15,0,telemetry);
+                robot.strafeBlindInches(30, -0.3, telemetry);
                 break;
             case 2:
-                robot.strafeInches(-35.25, telemetry);
+                robot.threadsleep(500);
+                robot.driveBlindInches(1,0.3,telemetry);
+                robot.strafeBlindInches(38.25, -0.3, telemetry);
+                robot.turnDegrees(0.15,0,telemetry);
                 break;
             case 3:
-                robot.strafeInches(-11.75, telemetry);
+                robot.threadsleep(1750);
+                robot.driveBlindInches(1,0.3,telemetry);
+                robot.strafeBlindInches(11.75, -0.3, telemetry);
+                robot.turnDegrees(0.15,0,telemetry);
                 break;
+            case -1:
+                break;
+
         }
     }
+
 }
