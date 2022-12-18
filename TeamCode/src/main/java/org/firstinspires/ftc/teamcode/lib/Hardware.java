@@ -32,13 +32,13 @@ public class Hardware {
     BNO055IMU.Parameters parameters = null;
     // Speed, arm height, claw position constan
 
-    public final double SPEED_CONSTANT = 0.75;
-    public final double SLOWMODE_CONSTANT = 0.33;
-    public final double ARM_MOTOR_PPR = 1425.1;
+    public final double SPEED_CONSTANT = 0.7;
+    public final double SLOWMODE_CONSTANT = 0.428;
+    public final double ARM_MOTOR_PPR = 384.5;
     public final int LOW_JUNCTION_ENCODER_CONSTANT = (int)Math.round(ARM_MOTOR_PPR*4800/1425.1);
     public final int MED_JUNCTION_ENCODER_CONSTANT = (int)Math.round(ARM_MOTOR_PPR*7800/1425.1);
     public final int HIGH_JUNCTION_ENCODER_CONSTANT = (int)Math.round(ARM_MOTOR_PPR*11000/1425.1);
-    public final int ARM_INCREMENT_ENCODER_CONSTANT = 600;
+    public final int ARM_INCREMENT_ENCODER_CONSTANT = (int)Math.round(ARM_MOTOR_PPR*600/1425.1);
     public final int ARM_NEVER_EXCEED = HIGH_JUNCTION_ENCODER_CONSTANT;
     public final double LEFT_CLAW_OPEN_POSITION = 0.15;
     public final double RIGHT_CLAW_OPEN_POSITION = 0.2;
@@ -114,7 +114,7 @@ public class Hardware {
         ArmMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         ArmMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         ArmMotor.setTargetPosition(0);
-        ArmMotor.setPower(1);
+        ArmMotor.setPower(0.74);
         ArmMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         // builders have CTE please colleges do not admit them for engineering
