@@ -11,8 +11,8 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import java.util.ArrayList;
 
-@Autonomous(name="Void Auto Single Left", group="9884")
-public class VoidAutoSingleLeft extends LinearOpMode {
+@Autonomous(name="Void Auto Park", group="9884")
+public class VoidAutoPark extends LinearOpMode {
     // INTRODUCE VARIABLES HERE
     Hardware robot = new Hardware();
     OpenCvCamera camera;
@@ -103,66 +103,19 @@ public class VoidAutoSingleLeft extends LinearOpMode {
 
         // correct heading
         robot.turnDegrees(0.15,0,telemetry);
-        // strafe 1 sq
-        robot.strafeBlindInches(23.5, 0.3, telemetry);
-        // correct heading
-        robot.turnDegrees(0.15,0,telemetry);
-        robot.driveBlindInches(1.5, -0.3, telemetry);
-        robot.ArmMotor.setTargetPosition(robot.HIGH_JUNCTION_ENCODER_CONSTANT); // raise arm
-        // strafe 1/2 sq
-        robot.strafeBlindInches(11.5, 0.3, telemetry);
-        // correct heading
-        robot.turnDegrees(0.15,0,telemetry);
-
-        // forward to pole
-        robot.driveBlindInches(2,0.2,telemetry);
-        // stop
-        robot.threadsleep(1000);
-        // open claw
-        robot.setClawRot(robot.LEFT_CLAW_OPEN_POSITION, robot.RIGHT_CLAW_OPEN_POSITION);
-        // delay
-        robot.threadsleep(100);
-        // move back
-        robot.driveBlindInches(2,-0.2,telemetry);
-        // lower arm
-        robot.ArmMotor.setTargetPosition(0);
-        // correct heading
-        robot.turnDegrees(0.15,0,telemetry);
-        // wat for arm
-        robot.threadsleep(500);
         switch (tagid) {
             case 1:
                 // correct for drift
-                robot.strafeBlindInches(11.75, -0.3, telemetry);
-                robot.driveBlindInches(1,0.3,telemetry);
-                robot.strafeBlindInches(23.5, -0.3, telemetry);
-                // correct heading
-                robot.turnDegrees(0.15,0,telemetry);
-                // correct for drift
-                robot.driveBlindInches(2,0.3, telemetry);
-                // correct heading
-                robot.turnDegrees(0.15,0,telemetry);
-                robot.strafeBlindInches(30, -0.3, telemetry);
-                robot.turnDegrees(0.15,0,telemetry);
+                robot.driveBlindInches(1.5, 0.3, telemetry);
+                robot.strafeBlindInches(25, -0.3, telemetry);
                 break;
             case 2:
             case -1:
-                // sleep for arm
-                robot.threadsleep(1000);
-                // correct for drift
-                robot.driveBlindInches(1,0.3,telemetry);
-                robot.strafeBlindInches(39, -0.3, telemetry);
-                // correct heading
-                robot.turnDegrees(0.15,0,telemetry);
-                robot.driveBlindInches(1,0.3,telemetry);
                 break;
             case 3:
-                robot.threadsleep(1750);
                 // correct for drift
-                robot.driveBlindInches(1,0.3,telemetry);
-                robot.strafeBlindInches(11.75, -0.3, telemetry);
-                // correct heading
-                robot.turnDegrees(0.15,0,telemetry);
+                robot.driveBlindInches(1.5, -0.3, telemetry);
+                robot.strafeBlindInches(25, 0.3, telemetry);
                 break;
 
         }
